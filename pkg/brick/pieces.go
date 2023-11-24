@@ -1,7 +1,7 @@
 package brick
 
 type Piece struct {
-	Id       string `json:"pieceId"`
+	ID       string `json:"pieceId"`
 	Variants []PieceVariant
 }
 

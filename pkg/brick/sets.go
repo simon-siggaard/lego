@@ -3,7 +3,7 @@ package brick
 import "fmt"
 
 type SetPiecePart struct {
-	Id       string `json:"designId"`
+	ID       string `json:"designId"`
 	Material int
 	PartType string `json:"partType"`
 }
@@ -14,7 +14,7 @@ type SetPiece struct {
 }
 
 type set struct {
-	Id         string
+	ID         string
 	Name       string
 	SetNumber  string     `json:"setNumber"`
 	SetPieces  []SetPiece `json:"pieces"`
@@ -24,15 +24,15 @@ type set struct {
 func (s set) AsSet() Set {
 	variants := make(map[string][]PieceVariant)
 	for _, setPiece := range s.SetPieces {
-		if len(variants[setPiece.Part.Id]) == 0 {
-			variants[setPiece.Part.Id] = []PieceVariant{
+		if len(variants[setPiece.Part.ID]) == 0 {
+			variants[setPiece.Part.ID] = []PieceVariant{
 				{
 					Color: Color(fmt.Sprint(setPiece.Part.Material)),
 					Count: setPiece.Quantity,
 				},
 			}
 		} else {
-			variants[setPiece.Part.Id] = append(variants[setPiece.Part.Id], PieceVariant{
+			variants[setPiece.Part.ID] = append(variants[setPiece.Part.ID], PieceVariant{
 				Color: Color(fmt.Sprint(setPiece.Part.Material)),
 				Count: setPiece.Quantity,
 			})
@@ -41,16 +41,16 @@ func (s set) AsSet() Set {
 
 	pieces := make([]Piece, len(variants))
 	n := 0
-	for pieceId, variants := range variants {
+	for pieceID, variants := range variants {
 		pieces[n] = Piece{
-			Id:       pieceId,
+			ID:       pieceID,
 			Variants: variants,
 		}
-		n += 1
+		n++
 	}
 
 	return Set{
-		Id:         s.Id,
+		ID:         s.ID,
 		Name:       s.Name,
 		SetNumber:  s.SetNumber,
 		Pieces:     pieces,
@@ -59,7 +59,7 @@ func (s set) AsSet() Set {
 }
 
 type Set struct {
-	Id         string
+	ID         string
 	Name       string
 	SetNumber  string
 	Pieces     []Piece
@@ -67,13 +67,13 @@ type Set struct {
 }
 
 func setSummaries() ([]Set, error) {
-	summaryUrl := domain + "/api/sets"
+	summaryURL := domain + "/api/sets"
 
 	s := struct {
 		Sets []set
 	}{}
 
-	err := getFromJson(&s, summaryUrl)
+	err := getFromJSON(&s, summaryURL)
 	if err != nil {
 		return nil, err
 	}
@@ -87,9 +87,9 @@ func setSummaries() ([]Set, error) {
 }
 
 func setDetails(id string) (Set, error) {
-	detailsUrl := domain + "/api/set/by-id/" + id
+	detailsURL := domain + "/api/set/by-id/" + id
 	set := set{}
-	err := getFromJson(&set, detailsUrl)
+	err := getFromJSON(&set, detailsURL)
 	if err != nil {
 		return Set{}, err
 	}
@@ -97,15 +97,15 @@ func setDetails(id string) (Set, error) {
 	return set.AsSet(), nil
 }
 
-func AvailableSets(userId string) ([]string, error) {
+func AvailableSets(userID string) ([]string, error) {
 	setsSummaries, err := setSummaries()
 	if err != nil {
 		return nil, err
 	}
 
 	user := User{}
-	userDetailsUrl := domain + "/api/user/by-id/" + userId
-	err = getFromJson(&user, userDetailsUrl)
+	userDetailsURL := domain + "/api/user/by-id/" + userID
+	err = getFromJSON(&user, userDetailsURL)
 	if err != nil {
 		return nil, err
 	}
@@ -113,13 +113,13 @@ func AvailableSets(userId string) ([]string, error) {
 	userPieces := make(map[string]int)
 	for _, piece := range user.Pieces {
 		for _, variant := range piece.Variants {
-			userPieces[piece.Id+string(variant.Color)] += variant.Count
+			userPieces[piece.ID+string(variant.Color)] += variant.Count
 		}
 	}
 
 	availableSets := []string{}
 	for _, ss := range setsSummaries {
-		details, err := setDetails(ss.Id)
+		details, err := setDetails(ss.ID)
 		if err != nil {
 			continue
 		}
@@ -127,13 +127,13 @@ func AvailableSets(userId string) ([]string, error) {
 		setPieces := make(map[string]int)
 		for _, piece := range details.Pieces {
 			for _, variant := range piece.Variants {
-				setPieces[piece.Id+string(variant.Color)] += variant.Count
+				setPieces[piece.ID+string(variant.Color)] += variant.Count
 			}
 		}
 
 		available := true
-		for pieceId, setPieceCount := range setPieces {
-			if userPieceCount, ok := userPieces[pieceId]; !ok || userPieceCount < setPieceCount {
+		for pieceID, setPieceCount := range setPieces {
+			if userPieceCount, ok := userPieces[pieceID]; !ok || userPieceCount < setPieceCount {
 				available = false
 				break
 			}

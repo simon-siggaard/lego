@@ -8,16 +8,16 @@ import (
 const domain = "https://d16m5wbro86fg2.cloudfront.net"
 
 type User struct {
-	Id         string
+	ID         string
 	Username   string
 	Location   string
 	BrickCount int     `json:"brickCount"`
 	Pieces     []Piece `json:"collection"`
 }
 
-// getFromJson make a GET request to the given url and decodes the response
+// getFromJSON make a GET request to the given url and decodes the response
 // into the given struct.
-func getFromJson[T any](t *T, url string) error {
+func getFromJSON[T any](t *T, url string) error {
 	result, err := http.Get(url)
 	if err != nil {
 		return err
@@ -34,22 +34,22 @@ func getFromJson[T any](t *T, url string) error {
 }
 
 func UserCollections() ([]User, error) {
-	summaryUrl := domain + "/api/users"
-	detailsUrl := domain + "/api/user/by-id"
+	summaryURL := domain + "/api/users"
+	detailsURL := domain + "/api/user/by-id"
 
 	users := struct {
 		Users []User
 	}{}
-	err := getFromJson(&users, summaryUrl)
+	err := getFromJSON(&users, summaryURL)
 	if err != nil {
 		return nil, err
 	}
 
 	for n, user := range users.Users {
 		user := user // no longer necessary in Go 1.22
-		url := detailsUrl + "/" + user.Id
+		url := detailsURL + "/" + user.ID
 
-		err = getFromJson(&user, url)
+		err = getFromJSON(&user, url)
 		if err != nil {
 			return nil, err
 		}
