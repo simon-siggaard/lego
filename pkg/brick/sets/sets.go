@@ -1,48 +1,60 @@
-package brick
+package sets
 
-import "fmt"
+import (
+	"fmt"
 
-type SetPiecePart struct {
+	"github.com/simon-siggaard/lego/pkg/brick"
+)
+
+type setPiecePart struct {
 	ID       string `json:"designId"`
 	Material int
 	PartType string `json:"partType"`
 }
 
-type SetPiece struct {
-	Part     SetPiecePart
+type setPiece struct {
+	Part     setPiecePart
 	Quantity int
+}
+
+type Set struct {
+	ID         string
+	Name       string
+	SetNumber  string
+	Pieces     []brick.Piece
+	TotalCount int `json:"totalPieces"`
 }
 
 type set struct {
 	ID         string
 	Name       string
 	SetNumber  string     `json:"setNumber"`
-	SetPieces  []SetPiece `json:"pieces"`
+	SetPieces  []setPiece `json:"pieces"`
 	TotalCount int        `json:"totalPieces"`
 }
 
 func (s set) AsSet() Set {
-	variants := make(map[string][]PieceVariant)
+	variants := make(map[string][]brick.PieceVariant)
 	for _, setPiece := range s.SetPieces {
 		if len(variants[setPiece.Part.ID]) == 0 {
-			variants[setPiece.Part.ID] = []PieceVariant{
+			variants[setPiece.Part.ID] = []brick.PieceVariant{
 				{
-					Color: Color(fmt.Sprint(setPiece.Part.Material)),
+					Color: brick.Color(fmt.Sprint(setPiece.Part.Material)),
 					Count: setPiece.Quantity,
 				},
 			}
 		} else {
-			variants[setPiece.Part.ID] = append(variants[setPiece.Part.ID], PieceVariant{
-				Color: Color(fmt.Sprint(setPiece.Part.Material)),
+			variants[setPiece.Part.ID] = append(variants[setPiece.Part.ID], brick.PieceVariant{
+				Color: brick.Color(fmt.Sprint(setPiece.Part.Material)),
 				Count: setPiece.Quantity,
 			})
 		}
 	}
 
-	pieces := make([]Piece, len(variants))
+	pieces := make([]brick.Piece, len(variants))
 	n := 0
 	for pieceID, variants := range variants {
-		pieces[n] = Piece{
+		pieces[n] = brick.Piece{
 			ID:       pieceID,
 			Variants: variants,
 		}
@@ -58,22 +70,14 @@ func (s set) AsSet() Set {
 	}
 }
 
-type Set struct {
-	ID         string
-	Name       string
-	SetNumber  string
-	Pieces     []Piece
-	TotalCount int `json:"totalPieces"`
-}
-
 func setSummaries() ([]Set, error) {
-	summaryURL := domain + "/api/sets"
+	summaryURL := brick.Domain + "/api/sets"
 
 	s := struct {
 		Sets []set
 	}{}
 
-	err := getFromJSON(&s, summaryURL)
+	err := brick.GetFromJSON(&s, summaryURL)
 	if err != nil {
 		return nil, err
 	}
@@ -87,9 +91,9 @@ func setSummaries() ([]Set, error) {
 }
 
 func setDetails(id string) (Set, error) {
-	detailsURL := domain + "/api/set/by-id/" + id
+	detailsURL := brick.Domain + "/api/set/by-id/" + id
 	set := set{}
-	err := getFromJSON(&set, detailsURL)
+	err := brick.GetFromJSON(&set, detailsURL)
 	if err != nil {
 		return Set{}, err
 	}
@@ -103,9 +107,9 @@ func AvailableSets(userID string) ([]string, error) {
 		return nil, err
 	}
 
-	user := User{}
-	userDetailsURL := domain + "/api/user/by-id/" + userID
-	err = getFromJSON(&user, userDetailsURL)
+	user := brick.User{}
+	userDetailsURL := brick.Domain + "/api/user/by-id/" + userID
+	err = brick.GetFromJSON(&user, userDetailsURL)
 	if err != nil {
 		return nil, err
 	}
