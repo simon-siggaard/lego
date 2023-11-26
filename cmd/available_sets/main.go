@@ -4,12 +4,19 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/simon-siggaard/lego/pkg/brick/sets"
+	"github.com/simon-siggaard/lego/pkg/brick"
+	"github.com/simon-siggaard/lego/pkg/brick/set"
+	"github.com/simon-siggaard/lego/pkg/brick/user"
 )
 
 func main() {
+	service := brick.NewService(user.Store{}, set.Store{})
+
 	now := time.Now()
-	sets, _ := sets.AvailableSets("d174c807-8880-4f49-866b-6e1ec6527ccf")
+	sets, err := service.AvailableSets("brickfan35")
+	if err != nil {
+		panic(err)
+	}
 	elapsed := time.Since(now)
 
 	for _, set := range sets {
