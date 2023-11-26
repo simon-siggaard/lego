@@ -1,5 +1,6 @@
 package brick
 
+// User represents a user.
 type User struct {
 	ID         string
 	Username   string

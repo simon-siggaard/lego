@@ -5,11 +5,13 @@ import (
 	"github.com/simon-siggaard/lego/pkg/brick/cache"
 )
 
+// CachedStore is a cached implementation of Store.
 type CachedStore struct {
 	redisCache *cache.RedisClient
 	store      Store
 }
 
+// NewCachedStore returns a new cached LEGO user store.
 func NewCachedStore(store Store) CachedStore {
 	return CachedStore{
 		redisCache: cache.NewRedisClient(),
@@ -17,6 +19,7 @@ func NewCachedStore(store Store) CachedStore {
 	}
 }
 
+// Summary returns a LEGO user summary.
 func (s CachedStore) Summary(username string) (brick.User, error) {
 	userSummaryURL := brick.Domain + "/api/user/by-username/" + username
 
@@ -34,6 +37,7 @@ func (s CachedStore) Summary(username string) (brick.User, error) {
 	return user, nil
 }
 
+// Details returns a LEGO user details.
 func (s CachedStore) Details(id string) (brick.User, error) {
 	userDetailsURL := brick.Domain + "/api/user/by-id/" + id
 
@@ -51,6 +55,7 @@ func (s CachedStore) Details(id string) (brick.User, error) {
 	return user, nil
 }
 
+// All returns details on all LEGO users.
 func (s CachedStore) All() ([]brick.User, error) {
 	summaryURL := brick.Domain + "/api/users"
 	detailsURL := brick.Domain + "/api/user/by-id"

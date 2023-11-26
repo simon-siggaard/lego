@@ -6,6 +6,7 @@ import (
 	"github.com/simon-siggaard/lego/pkg/brick"
 )
 
+// Store is a LEGO set store.
 type Store struct{}
 
 type setPiecePart struct {
@@ -64,6 +65,7 @@ func (s rawSet) asSet() brick.Set {
 	}
 }
 
+// Summaries returns a list of LEGO set summaries.
 func (s Store) Summaries() ([]brick.Set, error) {
 	summaryURL := brick.Domain + "/api/sets"
 
@@ -84,6 +86,7 @@ func (s Store) Summaries() ([]brick.Set, error) {
 	return sets, nil
 }
 
+// Details returns the details of a LEGO set.
 func (s Store) Details(id string) (brick.Set, error) {
 	detailsURL := brick.Domain + "/api/set/by-id/" + id
 	set := rawSet{}

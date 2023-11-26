@@ -6,6 +6,7 @@ import (
 	"github.com/simon-siggaard/lego/pkg/brick/cache"
 )
 
+// UnmarshalCachedOr unmarshals the cached value of key or calls orFunc and caches and returns the result.
 func UnmarshalCachedOr[T any](
 	rdb *cache.RedisClient,
 	key string,

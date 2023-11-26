@@ -6,11 +6,13 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// RedisClient is a Redis client.
 type RedisClient struct {
 	client  *redis.Client
 	context context.Context
 }
 
+// NewRedisClient returns a new Redis client.
 func NewRedisClient() *RedisClient {
 	return &RedisClient{
 		client: redis.NewClient(&redis.Options{
@@ -22,14 +24,17 @@ func NewRedisClient() *RedisClient {
 	}
 }
 
+// GET the cached value of key.
 func (r *RedisClient) Get(key string) ([]byte, error) {
 	return r.client.Get(r.context, key).Bytes()
 }
 
+// SET the cached value of key.
 func (r *RedisClient) Set(key string, value []byte) error {
 	return r.client.Set(r.context, key, value, 0).Err()
 }
 
+// Close the Redis client.
 func (r *RedisClient) Close() {
 	err := r.client.Close()
 	if err != nil {

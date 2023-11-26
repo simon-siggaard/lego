@@ -5,18 +5,22 @@ import (
 	"net/http"
 )
 
+// Piece represents a LEGO piece.
 type Piece struct {
 	ID       string `json:"pieceId"`
 	Variants []PieceVariant
 }
 
+// Color represents a LEGO piece color.
 type Color string
 
+// PieceVariant represents a LEGO piece variant.
 type PieceVariant struct {
 	Color Color
 	Count int
 }
 
+// Domain is the domain of the LEGO API.
 const Domain = "https://d16m5wbro86fg2.cloudfront.net"
 
 // GetFromJSON make a GET request to the given url and decodes the response

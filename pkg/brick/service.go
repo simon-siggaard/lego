@@ -4,22 +4,26 @@ import (
 	"fmt"
 )
 
+// SetService provides access to LEGO set data.
 type SetService interface {
 	Summaries() ([]Set, error)
 	Details(username string) (Set, error)
 }
 
+// UserService provides access to LEGO user data.
 type UserService interface {
 	Summary(username string) (User, error)
 	Details(username string) (User, error)
 	All() ([]User, error)
 }
 
+// Service assists users in finding sets they can build and create.
 type Service struct {
 	userStore UserService
 	setStore  SetService
 }
 
+// NewService creates a new Service.
 func NewService(userStore UserService, setStore SetService) *Service {
 	return &Service{
 		userStore: userStore,
@@ -27,6 +31,8 @@ func NewService(userStore UserService, setStore SetService) *Service {
 	}
 }
 
+// AvailableSets returns a list of sets that the user can build,
+// based on the pieces they own.
 func (s *Service) AvailableSets(username string) ([]string, error) {
 	user, err := s.userStore.Summary(username)
 	if err != nil {
@@ -81,6 +87,8 @@ func (s *Service) AvailableSets(username string) ([]string, error) {
 	return availableSets, nil
 }
 
+// FiftyPercent returns a list of pieces that are owned by at least 50% of the
+// users.
 func (s *Service) FiftyPercent(username string) ([]string, error) {
 	user, err := s.userStore.Summary(username)
 	if err != nil {

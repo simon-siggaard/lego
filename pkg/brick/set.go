@@ -1,5 +1,6 @@
 package brick
 
+// Set represents a LEGO set.
 type Set struct {
 	ID         string
 	Name       string
