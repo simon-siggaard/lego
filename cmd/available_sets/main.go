@@ -10,7 +10,10 @@ import (
 )
 
 func main() {
-	service := brick.NewService(user.Store{}, set.Store{})
+	service := brick.NewService(
+		user.NewCachedStore(user.Store{}),
+		set.NewCachedStore(set.Store{}),
+	)
 
 	now := time.Now()
 	sets, err := service.AvailableSets("brickfan35")

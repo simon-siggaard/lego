@@ -12,8 +12,10 @@ import (
 )
 
 func main() {
-	service := brick.NewService(user.Store{}, set.Store{})
-
+	service := brick.NewService(
+		user.NewCachedStore(user.Store{}),
+		set.NewCachedStore(set.Store{}),
+	)
 	now := time.Now()
 	pieces, err := service.FiftyPercent("megabuilder99")
 	if err != nil {
